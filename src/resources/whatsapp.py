@@ -59,10 +59,13 @@ def last_messages_current_conversation(driver:WebDriver):
         return serializer_element_current_conversation_to_model_contact(driver)
     return
 
-def send_message(driver:WebDriver,message:str):
+def send_message(driver:WebDriver = None,message:str = '',element:WebElement = None):
+    if element: element.click()
     input_field = driver.find_elements(By.CSS_SELECTOR, 'div[class="to2l77zo gfz4du6o ag5g9lrv bze30y65 kao4egtt"]')
     if len(input_field)>0:
-        input_field[0].send_keys(message)
+        for letter in message:
+            input_field[0].send_keys(letter)
+            time.sleep(.05) 
         input_field[0].send_keys(Keys.ENTER)
         return True
     return False
