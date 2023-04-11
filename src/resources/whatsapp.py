@@ -38,7 +38,7 @@ def serializer_element_current_conversation_to_model_contact(driver:WebDriver,el
     return models.Contact(
         web_element=element,
         name_contact=name_contact,
-        last_messages=messages
+        last_messages=[message for message in messages if message !='']
     )
 
 def new_messages(driver:WebDriver):
@@ -49,15 +49,28 @@ def new_messages(driver:WebDriver):
     panel_conversations_web_element = panel_conversations_web_element[0]
     panel_conversations_web_element = panel_conversations_web_element.find_elements(By.CSS_SELECTOR,'div[class="lhggkp7q ln8gz9je rx9719la"]')
     panel_conversations_web_element = [element for element in panel_conversations_web_element if is_new_message(element)]
-    return [serializer_element_current_conversation_to_model_contact(element,driver) for element in panel_conversations_web_element ]
+    return [serializer_element_current_conversation_to_model_contact(driver,element=element) for element in panel_conversations_web_element ]
 
 def last_messages_current_conversation(driver:WebDriver):
     css_selector_name_header = 'span[data-testid="conversation-info-header-chat-title"]'
     time.sleep(1)
-    name_contact = driver.find_element(By.CSS_SELECTOR,css_selector_name_header)
+    name_contact = driver.find_elements(By.CSS_SELECTOR,css_selector_name_header)
     if len(name_contact) >0:
         return serializer_element_current_conversation_to_model_contact(driver)
     return
+
+def send_message(driver:WebDriver,message:str):
+    input_field = driver.find_elements(By.CSS_SELECTOR, 'div[class="to2l77zo gfz4du6o ag5g9lrv bze30y65 kao4egtt"]')
+    if len(input_field)>0:
+        input_field[0].send_keys(message)
+        input_field[0].send_keys(Keys.ENTER)
+        return True
+    return False
+
+def fetch_conversation_by_name(driver:WebDriver,name:str):
+    css_selector_name = f'span[dir="auto"][title="{name}"]'
+    found = driver.find_elements(By.CSS_SELECTOR,css_selector_name)
+    return [serializer_element_current_conversation_to_model_contact(driver,element=element) for element in found ] 
 
 def is_logged(driver:WebDriver):
     css_selector_qrcode = 'div[data-testid="qrcode"]'
