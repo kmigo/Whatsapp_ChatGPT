@@ -11,5 +11,5 @@ class BotAction(ABC):
 class Bot(ABC):
     actions:BotAction=[]
     @abstractclassmethod
-    def run(self):
+    def run(self,func):
         raise NotImplemented
