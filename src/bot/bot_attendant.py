@@ -38,8 +38,12 @@ class BotAttendant(Bot):
             if len(contacts_found) >=1:
                 pass
             else:
-                self.new_conversations.append(last_messages_current_contact)
-
+                before_contact = list(filter(lambda x: x.name_contact == last_messages_current_contact.name_contact ,self.history_conversation.values())) 
+                if before_contact:
+                    if ''.join(last_messages_current_contact.last_messages) != ''.join(before_contact[0].last_messages):
+                        self.new_conversations.append(last_messages_current_contact)
+                else:
+                    self.new_conversations.append(last_messages_current_contact)
         
     
 
@@ -108,8 +112,8 @@ class BotAttendant(Bot):
             self._update_conversation_by_contact(contact)
             if len(contact.actions) == len(self.actions):
                 send_message(driver=self.driver,message="Obrigado por nos ajudar a melhorar nossa atendiment até a proxima")
-                resume = ''.join([f'{index} - {question.name}\nR: {question.response}' for index,question in contact.actions])
-                send_message(sriver=self.driver,message=resume)
+                resume = ''.join([f'{index} - {question.name}\nR: {question.response}\n' for index,question in enumerate(contact.actions)])
+                send_message(driver=self.driver,message=resume)
             if contact.bot_action == 0:
                 #criar um script pa salvar todas as respostas anteriores e zerar do contato
                 contact.done = True
